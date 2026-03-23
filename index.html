@@ -1,74 +1,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dynamic Voting System</title>
+    <title>Advanced Voting System</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            text-align: center;
-            padding: 50px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
-            background: white;
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.15);
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 20px;
             width: 420px;
-            margin: auto;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
         }
 
         h1 {
-            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .candidate {
-            margin: 10px 0;
-            font-size: 18px;
-            text-align: left;
+            margin: 15px 0;
+        }
+
+        label {
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2);
         }
 
         .bar {
             height: 10px;
-            background: #ddd;
-            border-radius: 5px;
-            margin-top: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
         }
 
         .fill {
-            height: 10px;
-            background: #4facfe;
-            border-radius: 5px;
+            height: 100%;
             width: 0%;
+            border-radius: 10px;
+            transition: width 0.6s ease-in-out;
+        }
+
+        .fill1 { background: #ff6b6b; }
+        .fill2 { background: #4ecdc4; }
+        .fill3 { background: #ffe66d; }
+
+        .stats {
+            font-size: 13px;
+            margin-top: 3px;
         }
 
         button {
-            background: #4facfe;
-            color: white;
+            width: 100%;
+            padding: 12px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 10px;
             margin-top: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        button:hover {
-            background: #00c6ff;
+        #voteBtn {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+        }
+
+        #voteBtn:hover {
+            transform: scale(1.05);
+        }
+
+        #resetBtn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         #result {
             margin-top: 15px;
+            text-align: center;
             font-weight: bold;
-            color: green;
         }
 
         .winner {
-            color: red;
-            font-weight: bold;
+            text-shadow: 0 0 10px gold, 0 0 20px gold;
+            color: #ffd700;
         }
     </style>
 </head>
@@ -76,116 +125,105 @@
 <body>
 
 <div class="container">
-    <h1>Online Voting System</h1>
+    <h1>🗳 Voting System</h1>
 
     <div class="candidate">
-        <input type="radio" name="vote" value="Balen Shah"> Balen Shah
-        <div class="bar"><div id="bar1" class="fill"></div></div>
-        <span id="count1"></span>
+        <label><input type="radio" name="vote"> Balen Shah</label>
+        <div class="bar"><div id="bar1" class="fill fill1"></div></div>
+        <div id="count1" class="stats"></div>
     </div>
 
     <div class="candidate">
-        <input type="radio" name="vote" value="KP Oli"> KP Oli
-        <div class="bar"><div id="bar2" class="fill"></div></div>
-        <span id="count2"></span>
+        <label><input type="radio" name="vote"> KP Oli</label>
+        <div class="bar"><div id="bar2" class="fill fill2"></div></div>
+        <div id="count2" class="stats"></div>
     </div>
 
     <div class="candidate">
-        <input type="radio" name="vote" value="Prachanda"> Prachanda
-        <div class="bar"><div id="bar3" class="fill"></div></div>
-        <span id="count3"></span>
+        <label><input type="radio" name="vote"> Prachanda</label>
+        <div class="bar"><div id="bar3" class="fill fill3"></div></div>
+        <div id="count3" class="stats"></div>
     </div>
 
-    <button id="voteBtn" onclick="vote()">Vote</button>
-    <button onclick="resetVotes()">Reset</button>
+    <button id="voteBtn" onclick="vote()">🚀 Submit Vote</button>
+    <button id="resetBtn" onclick="resetVotes()">♻ Reset</button>
 
     <div id="result"></div>
 </div>
 
 <script>
-    let candidates = ["Balen Shah", "KP Oli", "Prachanda"];
+    let names = ["Balen Shah", "KP Oli", "Prachanda"];
 
     function getVotes() {
-        let votes = JSON.parse(localStorage.getItem("votes"));
-        if (!votes) {
-            votes = [0, 0, 0];
-        }
-        return votes;
+        return JSON.parse(localStorage.getItem("votes")) || [0,0,0];
     }
 
-    function saveVotes(votes) {
-        localStorage.setItem("votes", JSON.stringify(votes));
+    function saveVotes(v) {
+        localStorage.setItem("votes", JSON.stringify(v));
     }
 
     function updateUI() {
-        let votes = getVotes();
-        let total = votes.reduce((a, b) => a + b, 0);
+        let v = getVotes();
+        let total = v.reduce((a,b)=>a+b,0);
 
-        for (let i = 0; i < votes.length; i++) {
-            let percent = total === 0 ? 0 : (votes[i] / total) * 100;
+        for (let i=0;i<3;i++) {
+            let percent = total===0 ? 0 : (v[i]/total)*100;
 
-            document.getElementById("count" + (i+1)).innerHTML =
-                votes[i] + " votes (" + percent.toFixed(1) + "%)";
-
-            document.getElementById("bar" + (i+1)).style.width =
-                percent + "%";
+            document.getElementById("bar"+(i+1)).style.width = percent+"%";
+            document.getElementById("count"+(i+1)).innerHTML =
+                `${v[i]} votes (${percent.toFixed(1)}%)`;
         }
 
-        // Highlight winner
-        let max = Math.max(...votes);
-        let winnerIndex = votes.indexOf(max);
+        let max = Math.max(...v);
+        let winner = names[v.indexOf(max)];
 
-        if (total > 0) {
+        if(total>0){
             document.getElementById("result").innerHTML =
-                "🏆 Leading: " + candidates[winnerIndex];
+                `🏆 Leading: <span class="winner">${winner}</span>`;
         }
     }
 
     function vote() {
-        if (localStorage.getItem("voted") === "true") {
-            document.getElementById("result").innerHTML =
-                "You already voted!";
+        if(localStorage.getItem("voted")==="true"){
+            document.getElementById("result").innerHTML = "❌ You already voted!";
             return;
         }
 
-        let options = document.getElementsByName("vote");
-        let selectedIndex = -1;
+        let radios = document.getElementsByName("vote");
+        let index = -1;
 
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].checked) {
-                selectedIndex = i;
-            }
+        for(let i=0;i<radios.length;i++){
+            if(radios[i].checked) index=i;
         }
 
-        if (selectedIndex === -1) {
-            document.getElementById("result").innerHTML =
-                "Select a candidate!";
+        if(index===-1){
+            document.getElementById("result").innerHTML = "⚠ Select a candidate!";
             return;
         }
 
-        let votes = getVotes();
-        votes[selectedIndex]++;
-        saveVotes(votes);
+        let v = getVotes();
+        v[index]++;
+        saveVotes(v);
 
-        localStorage.setItem("voted", "true");
+        localStorage.setItem("voted","true");
 
         document.getElementById("voteBtn").disabled = true;
 
         updateUI();
     }
 
-    function resetVotes() {
+    function resetVotes(){
         localStorage.clear();
         location.reload();
     }
 
-    window.onload = function () {
+    window.onload = function(){
         updateUI();
 
-        if (localStorage.getItem("voted") === "true") {
+        if(localStorage.getItem("voted")==="true"){
             document.getElementById("voteBtn").disabled = true;
         }
-    };
+    }
 </script>
 
 </body>
