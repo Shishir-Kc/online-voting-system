@@ -4,6 +4,7 @@
     <title>Pro Voting System</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
+    <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
 
@@ -13,6 +14,7 @@
             height: 100vh;
             margin: 0;
 
+            /* Parliament background with overlay */
             background:
                 linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
                 url('https://upload.wikimedia.org/wikipedia/commons/6/6e/Nepal_Parliament_Building.jpg');
@@ -69,12 +71,14 @@
 
 <body>
 
+<!-- Step 1: Login Interface -->
 <div class="box" id="loginBox">
     <h2>Login</h2>
     <input type="text" id="username" placeholder="Enter username">
     <button onclick="login()">Login</button>
 </div>
 
+<!-- Step 2: Voting Interface -->
 <div class="box" id="voteBox" style="display:none;">
     <h2>🗳 Vote</h2>
 
@@ -92,17 +96,18 @@
 </div>
 
 <script>
+
 const firebaseConfig = {
     apiKey: "YOUR_KEY",
     authDomain: "YOUR_PROJECT.firebaseapp.com",
     databaseURL: "https://YOUR_PROJECT.firebaseio.com",
     projectId: "YOUR_PROJECT",
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let user = "";
+
 
 function login(){
     user = document.getElementById("username").value;
@@ -112,13 +117,16 @@ function login(){
         return;
     }
 
+    
     localStorage.setItem("user", user);
 
     document.getElementById("loginBox").style.display="none";
     document.getElementById("voteBox").style.display="block";
 
+    
     checkVote();
 }
+
 
 function checkVote(){
     db.ref("users/"+user).once("value", snap=>{
@@ -128,6 +136,9 @@ function checkVote(){
     });
 }
 
+/* ===================================
+    🔹 Vote Function
+   =================================== */
 function vote(){
     let radios=document.getElementsByName("vote");
     let index=-1;
@@ -137,28 +148,33 @@ function vote(){
     }
 
     if(index==-1){
-        document.getElementById("msg").innerHTML="Select a candidate!";
+        document.getElementById("msg").innerHTML="⚠ Select a candidate!";
         return;
     }
 
+    // Step 4: Check Firebase if user voted
     db.ref("users/"+user).once("value", snap=>{
         if(snap.exists()){
             document.getElementById("msg").innerHTML="❌ Already voted!";
         } else {
 
+            // Step 5: Increment candidate vote in global array
             db.ref("votes").transaction(v=>{
                 if(v==null) v=[0,0,0];
                 v[index]++;
                 return v;
             });
 
+            // Step 6: Save that this user voted
             db.ref("users/"+user).set(true);
             document.getElementById("msg").innerHTML="✅ Vote submitted!";
         }
     });
 }
 
-// LIVE RESULT
+/* ===================================
+    🔹 Live Vote Result
+   =================================== */
 db.ref("votes").on("value", snap=>{
     let v=snap.val()||[0,0,0];
     let total=v.reduce((a,b)=>a+b,0);
@@ -168,6 +184,8 @@ db.ref("votes").on("value", snap=>{
         document.getElementById("b"+(i+1)).style.width=p+"%";
     }
 });
+
+
 </script>
 
 </body>
