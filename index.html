@@ -52,6 +52,11 @@
             font-weight: bold;
             color: green;
         }
+
+        .disabled {
+            background: gray !important;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -69,20 +74,35 @@
     </div>
 
     <div class="candidate">
-        <input type="radio" name="vote" value="puspha kamal dahal "> puspha kamal dahal 
+        <input type="radio" name="vote" value="Pushpa Kamal Dahal"> Pushpa Kamal Dahal
     </div>
 
-    <button onclick="vote()">Vote</button>
+    <button id="voteBtn" onclick="vote()">Vote</button>
 
     <div id="result"></div>
 </div>
 
 <script>
-    let voted = false;
+    // Run when page loads
+    window.onload = function () {
+        let voted = localStorage.getItem("voted");
+        let candidate = localStorage.getItem("votedCandidate");
+
+        if (voted === "true") {
+            document.getElementById("result").innerHTML =
+                "You have already voted for " + candidate;
+
+            // Disable button
+            document.getElementById("voteBtn").disabled = true;
+            document.getElementById("voteBtn").classList.add("disabled");
+        }
+    };
 
     function vote() {
-        if (voted) {
-            document.getElementById("result").innerHTML = "You have already voted!";
+        // Prevent multiple voting
+        if (localStorage.getItem("voted") === "true") {
+            document.getElementById("result").innerHTML =
+                "You have already voted!";
             return;
         }
 
@@ -95,13 +115,25 @@
             }
         }
 
-        if (selected == "") {
-            document.getElementById("result").innerHTML = "Please select a candidate!";
+        if (selected === "") {
+            document.getElementById("result").innerHTML =
+                "Please select a candidate!";
         } else {
-            document.getElementById("result").innerHTML = "You voted for " + selected;
-            voted = true;
+            document.getElementById("result").innerHTML =
+                "You voted for " + selected;
+
+            // Save vote in browser
+            localStorage.setItem("voted", "true");
+            localStorage.setItem("votedCandidate", selected);
+
+            // Disable button after voting
+            document.getElementById("voteBtn").disabled = true;
+            document.getElementById("voteBtn").classList.add("disabled");
         }
     }
 </script>
+
 </body>
 </html>
+
+
