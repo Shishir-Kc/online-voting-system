@@ -1,2 +1,123 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Voting System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4e73df, #1cc88a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 400px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .candidate {
+            background: #f8f9fc;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .candidate:hover {
+            background: #d1d3e2;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #4e73df;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2e59d9;
+        }
+
+        .result {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>🗳 Online Voting System</h2>
+
+    <form id="voteForm">
+        <div class="candidate">
+            <input type="radio" name="candidate" value="Candidate A"> Candidate A
+        </div>
+
+        <div class="candidate">
+            <input type="radio" name="candidate" value="Candidate B"> Candidate B
+        </div>
+
+        <div class="candidate">
+            <input type="radio" name="candidate" value="Candidate C"> Candidate C
+        </div>
+
+        <button type="button" onclick="vote()">Submit Vote</button>
+    </form>
+
+    <div class="result">
+        <h3>Results:</h3>
+        <p id="resultText">No votes yet.</p>
+    </div>
+</div>
+
+<script>
+    let voteCount = {
+        "Candidate A": 0,
+        "Candidate B": 0,
+        "Candidate C": 0
+    };
+
+    function vote() {
+        let candidates = document.getElementsByName("candidate");
+        let selected = "";
+
+        for (let i = 0; i < candidates.length; i++) {
+            if (candidates[i].checked) {
+                selected = candidates[i].value;
+            }
+        }
+
+        if (selected == "") {
+            alert("Please select a candidate!");
+            return;
+        }
+
+        voteCount[selected]++;
+
+        document.getElementById("resultText").innerHTML =
+            "Candidate A: " + voteCount["Candidate A"] + " votes<br>" +
+            "Candidate B: " + voteCount["Candidate B"] + " votes<br>" +
+            "Candidate C: " + voteCount["Candidate C"] + " votes";
+    }
+</script>
+
+</body>
+</html>
