@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Voting System</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.15);
+            padding: 30px;
+            border-radius: 20px;
+            width: 420px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .candidate {
+            margin: 15px 0;
+        }
+
+        label {
+            cursor: pointer;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .bar {
+            height: 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.6s ease-in-out;
+        }
+
+        .fill1 { background: #ff6b6b; }
+        .fill2 { background: #4ecdc4; }
+        .fill3 { background: #ffe66d; }
+
+        .stats {
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #voteBtn {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+        }
+
+        #voteBtn:hover {
+            transform: scale(1.05);
+        }
+
+        #resetBtn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        #resetBtn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        #result {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .winner {
+            text-shadow: 0 0 10px gold, 0 0 20px gold;
+            color: #ffd700;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🗳 Voting System</h1>
+
+    <div class="candidate">
+        <label><input type="radio" name="vote"> Balen Shah</label>
+        <div class="bar"><div id="bar1" class="fill fill1"></div></div>
+        <div id="count1" class="stats"></div>
+    </div>
+
+    <div class="candidate">
+        <label><input type="radio" name="vote"> KP Oli</label>
+        <div class="bar"><div id="bar2" class="fill fill2"></div></div>
+        <div id="count2" class="stats"></div>
+    </div>
+
+    <div class="candidate">
+        <label><input type="radio" name="vote"> Prachanda</label>
+        <div class="bar"><div id="bar3" class="fill fill3"></div></div>
+        <div id="count3" class="stats"></div>
+    </div>
+
+    <button id="voteBtn" onclick="vote()">🚀 Submit Vote</button>
+    <button id="resetBtn" onclick="resetVotes()">♻ Reset</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    let names = ["Balen Shah", "KP Oli", "Prachanda"];
+
+    function getVotes() {
+        return JSON.parse(localStorage.getItem("votes")) || [0,0,0];
+    }
+
+    function saveVotes(v) {
+        localStorage.setItem("votes", JSON.stringify(v));
+    }
+
+    function updateUI() {
+        let v = getVotes();
+        let total = v.reduce((a,b)=>a+b,0);
+
+        for (let i=0;i<3;i++) {
+            let percent = total===0 ? 0 : (v[i]/total)*100;
+
+            document.getElementById("bar"+(i+1)).style.width = percent+"%";
+            document.getElementById("count"+(i+1)).innerHTML =
+                `${v[i]} votes (${percent.toFixed(1)}%)`;
+        }
+
+        let max = Math.max(...v);
+        let winner = names[v.indexOf(max)];
+
+        if(total>0){
+            document.getElementById("result").innerHTML =
+                `🏆 Leading: <span class="winner">${winner}</span>`;
+        }
+    }
+
+    function vote() {
+        if(localStorage.getItem("voted")==="true"){
+            document.getElementById("result").innerHTML = "❌ You already voted!";
+            return;
+        }
+
+        let radios = document.getElementsByName("vote");
+        let index = -1;
+
+        for(let i=0;i<radios.length;i++){
+            if(radios[i].checked) index=i;
+        }
+
+        if(index===-1){
+            document.getElementById("result").innerHTML = "⚠ Select a candidate!";
+            return;
+        }
+
+        let v = getVotes();
+        v[index]++;
+        saveVotes(v);
+
+        localStorage.setItem("voted","true");
+
+        document.getElementById("voteBtn").disabled = true;
+
+        updateUI();
+    }
+
+    function resetVotes(){
+        localStorage.clear();
+        location.reload();
+    }
+
+    window.onload = function(){
+        updateUI();
+
+        if(localStorage.getItem("voted")==="true"){
+            document.getElementById("voteBtn").disabled = true;
+        }
+    }
+</script>
+
+</body>
+</html>
