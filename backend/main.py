@@ -1,8 +1,9 @@
 import json
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect 
 from fastapi.responses import HTMLResponse
 
-app = FastAPI()
+app = FastAPI(docs_url=None,
+    redoc_url=None,)
 
 candidates = ["Balen Shah", "KP Oli", "Prachanda", "Ramesh", "Sita"]
 votes = [0] * len(candidates)
@@ -58,3 +59,7 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.get("/")
 def root():
     return {"candidates": candidates, "votes": votes}
+
+@app.get("/hi/")
+def poke_me():
+    return {"response":"yo"}
