@@ -36,8 +36,6 @@
         #voteBtn { background: linear-gradient(to right,#00c6ff,#0072ff); color:white; }
         #voteBtn:hover { transform:scale(1.05); }
         #voteBtn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
-        #resetBtn { background: rgba(255,255,255,0.2); color:white; }
-        #resetBtn:hover { background: rgba(255,255,255,0.3); }
         #result { margin-top:15px; text-align:center; font-weight:bold; font-size:16px; }
         .winner { text-shadow: 0 0 10px gold,0 0 20px gold; color:#ffd700; }
         #status { text-align:center; font-size:12px; margin-bottom:10px; opacity:0.8; }
@@ -49,7 +47,6 @@
     <div id="status">Connecting...</div>
     <div id="candidatesContainer"></div>
     <button id="voteBtn" onclick="vote()">🚀 Submit Vote</button>
-    <button id="resetBtn" onclick="resetVotes()">♻ Reset</button>
     <div id="result"></div>
 </div>
 
@@ -139,11 +136,6 @@
         hasVoted = true;
         document.getElementById("voteBtn").disabled=true;
         disableRadios();
-    }
-
-    function resetVotes(){
-        localStorage.clear();
-        location.reload();
     }
 
     connect();
